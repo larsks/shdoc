@@ -1,0 +1,29 @@
+div {
+	vertical-align: top;
+}
+
+.outer {
+	white-space: nowrap;
+}
+
+.doc {
+	display: inline-block;
+	white-space: normal;
+	margin-right: 5em;
+	width: 30%;
+}
+
+.code {
+	display: inline-block;
+}
+
+.doc pre {
+	border: thin solid black;
+	background-color: #e0e0e0;
+	padding: 1ex;
+}
+
+.code pre {
+	margin-bottom: 2ex;
+	margin-top: 0;
+}

@@ -1,10 +1,21 @@
+import os
 import sys
 import argparse
 import contextlib
+import markdown
+import jinja2
 
 
 def parse_args():
     p = argparse.ArgumentParser()
+
+    p.add_argument('--template', '-t',
+                   default='template.html')
+    p.add_argument('--stylesheet', '-s',
+                   default='style.css')
+    p.add_argument('--title', '-T')
+    p.add_argument('--shortname', '-S',
+                   action='store_true')
 
     p.add_argument('input', nargs='?')
 
@@ -24,6 +35,21 @@ def file_or_stdin(name):
         fd.close()
 
 
+def emit_chunk(chunk, doc):
+    return '\n'.join([
+        '<div class="outer">',
+        '<div class="doc">',
+        markdown.markdown('\n'.join(doc)),
+        '</div>',
+        '<div class="code">',
+        '<pre><code>',
+        ''.join(chunk),
+        '</code></pre>',
+        '</div>',
+        '</div>',
+    ])
+
+
 def main():
     args = parse_args()
 
@@ -32,7 +58,14 @@ def main():
     curdoc = []
     code = []
 
+    with open('template.html') as fd:
+        template = jinja2.Template(fd.read())
+
     with file_or_stdin(args.input) as fd:
+        title = (args.title if args.title else (
+            os.path.basename(fd.name) if args.shortname
+            else fd.name))
+
         for line in fd:
             if line.startswith('# ') or line.strip() == '#':
                 curdoc.append(line.strip()[2:])
@@ -46,27 +79,27 @@ def main():
         if curdoc:
             docblocks[lineno] = curdoc
 
-    incode = False
-    indiv = False
+    chunk = []
+    doc = []
+    content = ''
 
     for lineno, line in enumerate(code):
         if lineno in docblocks:
-            if incode:
-                sys.stdout.write('</code></pre>\n')
-                incode = False
-            sys.stdout.write('<div class="doc" markdown="1">')
-            sys.stdout.write('\n'.join(docblocks[lineno]))
-            sys.stdout.write('\n')
-            sys.stdout.write('</div>\n')
-            sys.stdout.write('\n')
+            if chunk:
+                content += emit_chunk(chunk, doc)
+                chunk = []
+                doc = []
 
-        if not incode:
-            sys.stdout.write('<pre class="code"><code>\n')
-            incode = True
-        sys.stdout.write(line)
+            doc = docblocks[lineno]
 
-    if incode:
-        sys.stdout.write('</code></pre>\n')
+        chunk.append(line)
+
+    if chunk:
+        content += emit_chunk(chunk, doc)
+
+    print template.render(content=content,
+                          title=title,
+                          stylesheet=args.stylesheet)
 
 if __name__ == '__main__':
     main()
