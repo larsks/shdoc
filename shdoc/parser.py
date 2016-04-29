@@ -27,7 +27,7 @@ class HashCommentParser(object):
         # by an arbitrary amount of whitespace).
         for line in self.fd:
             if line.strip().startswith('# ') and not indoc:
-                if doc:
+                if code:
                     yield (code, doc)
                     code = []
                     doc = []
