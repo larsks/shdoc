@@ -1,0 +1,4 @@
+# Here is a documentation.
+
+This example has documentation on the very first line.
+

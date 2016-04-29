@@ -1,0 +1,8 @@
+This is a document
+where there is "code" before the 
+first chunk of documentation
+
+# Here is a documentation.
+
+We expect the documentation chunk to be associated
+with this paragraph rather than with the first one.

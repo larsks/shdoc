@@ -1,0 +1,4 @@
+This example has documentation at the very
+end of the document.
+
+# Here is a documentation.
