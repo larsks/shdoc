@@ -1,0 +1,13 @@
+# Here is a chunk of documentation.
+
+
+
+
+
+
+The blank lines before this paragraph should be ignored by the
+parser.
+
+
+
+But the lines above this one should still show up.
