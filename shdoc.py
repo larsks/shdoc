@@ -4,6 +4,7 @@ import jinja2
 import markdown
 import os
 import sys
+from cgi import escape
 
 from documenter import Documenter
 
@@ -19,6 +20,11 @@ def parse_args():
     p.add_argument('--shortname', '-S',
                    action='store_true')
     p.add_argument('--output', '-o')
+    p.add_argument('--language', '-l')
+    p.add_argument('--map-extension', '-m',
+                   action='append',
+                   default=[],
+                   type=lambda x: x.split('=', 1))
 
     p.add_argument('input', nargs='?')
 
@@ -51,7 +57,7 @@ def emit_chunk(chunk, doc):
         '</div>',
         '<div class="code">',
         '<pre><code>',
-        ''.join(chunk),
+        ''.join(escape(x) for x in chunk),
         '</code></pre>',
         '</div>',
         '</div>',
@@ -60,6 +66,7 @@ def emit_chunk(chunk, doc):
 
 def main():
     args = parse_args()
+    args.map_extension = dict(args.map_extension)
 
     with open(args.template) as fd:
         template = jinja2.Template(fd.read())
@@ -70,12 +77,18 @@ def main():
             os.path.basename(fd.name) if args.shortname
             else fd.name))
 
+        for ext, lname in args.map_extension.items():
+            if fd.name.endswith(ext):
+                args.language = lname
+                break
+
         for code, doc in Documenter(fd):
             content += emit_chunk(code, doc)
 
     with file_or_stdio(args.output, 'w') as fd:
         fd.write(template.render(content=content,
                                  title=title,
+                                 language=args.language,
                                  stylesheet=args.stylesheet))
 
 if __name__ == '__main__':

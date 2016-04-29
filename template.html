@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{{stylesheet}}"></link>
   </head>
 
-  <body>
+  <body {% if language %}class="language-{{language}}" {% endif %}>
     <h1>{{title}}</h1>
 
     {{content}}
