@@ -101,14 +101,7 @@ def main():
         template = jinja2.Template(fd.read())
 
     content = ''
-    with file_or_stdio(args.input, 'r') as fd:
-        # Set the title to the value of the `--title` option, if
-        # provided, otherwise the base filename if `--shortname` was
-        # provided, or the full path otherwise.
-        title = (args.title if args.title else (
-            os.path.basename(fd.name) if args.shortname
-            else fd.name))
-
+    with file_or_stdio(args.input, 'r') as infd:
         # Try to match the file extension against the extension map
         # and set the "language" key.  The "language" key is available
         # to your template and can be used, for example, to explicitly
@@ -118,19 +111,27 @@ def main():
         # [highlight.js]: https://highlightjs.org/
         # [prism]: http://prismjs.com/
         for ext, lname in args.map_extension.items():
-            if fd.name.endswith(ext):
+            if infd.name.endswith(ext):
                 args.language = lname
                 break
 
-        for code, doc in HashCommentParser(fd):
+        for code, doc in HashCommentParser(infd):
             content += emit_chunk(code, doc)
 
-    # Render the template
-    with file_or_stdio(args.output, 'w') as fd:
-        fd.write(template.render(content=content,
-                                 title=title,
-                                 language=args.language,
-                                 metadata=args.metadata))
+        # Set the title to the value of the `--title` option, if
+        # provided, otherwise the base filename if `--shortname` was
+        # provided, or the full path otherwise.
+        title = (args.title if args.title else (
+            os.path.basename(infd.name) if args.shortname
+            else infd.name))
+
+        # Render the template
+        with file_or_stdio(args.output, 'w') as outfd:
+            outfd.write(template.render(content=content,
+                                     filename=infd.name,
+                                     title=title,
+                                     language=args.language,
+                                     metadata=args.metadata))
 
 if __name__ == '__main__':
     main()
