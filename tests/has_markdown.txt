@@ -1,0 +1,10 @@
+# Documentation is processed using the `markdown` module, which
+# means that documentation can contain things like embedded
+# code examples:
+#
+#     for line in sys.stdin:
+#         print line.replace('hello', 'goodbye')
+#
+# Pretty spiffy stuff.
+
+And here is some lovely code.
