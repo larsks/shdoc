@@ -14,4 +14,9 @@ setup(name='shdoc',
       package_data={'shdoc': [
           'data/*.j2',
       ]},
-      entry_points={'console_scripts': ['shdoc = shdoc.main:main']})
+      entry_points={'console_scripts': [
+          'shdoc = shdoc.main:main',
+          'shdoc-tangle = shdoc.tangle:main',
+          'shdoc-weave = shdoc.weave:main',
+          'shdoc-json = shdoc.jsondump:main',
+      ]})
