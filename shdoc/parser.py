@@ -37,6 +37,8 @@ class HashCommentParser(object):
                 doc.append(line.strip()[2:])
             elif (doc and line.strip() == '#'):
                 doc.append('')
+            elif not code and not line.strip():
+                continue
             else:
                 indoc = False
                 code.append(line)
