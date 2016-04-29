@@ -26,27 +26,80 @@ chunk_template_path = pkg_resources.resource_filename(
 def parse_args():
     p = argparse.ArgumentParser()
 
+    # `--template TEMPLATE`
+    #
+    # Path to a Jinja2 template that will be used to create the final
+    # document.  See `shdoc/data/template.html.h2` for an example
+    # template.
     p.add_argument('--template', '-t',
                    default=default_template_path,
                    help='Path to the HTML template')
+
+    # `--chunk-template TEMPLATE`
+    #
+    # Path to a Jinja2 template that will be used to render each chunk
+    # of code + documentation.  Ideally you won't need to use this one
+    # much.
     p.add_argument('--chunk-template',
                    default=chunk_template_path,
                    help='Path to HTML template for code/doc chunks')
+
+    # `--title TITLE`
+    #
+    # Set an explicit title for the document, rather then deriving one
+    # from the input pathname.
     p.add_argument('--title', '-T',
                    help='Document title (available to template as "title")')
+
+    # `--shortname`
+    #
+    # This is a boolean option that, when set, causes shdoc to use
+    # just the basename of a file as the derived title, rather than
+    # the full pathname.
     p.add_argument('--shortname', '-S',
                    action='store_true',
                    help='Use basename rather than full path for title')
+
+    # `--output OUTPUT`
+    #
+    # Send output to a file, rather than to *stdout*.
     p.add_argument('--output', '-o')
+
+    # `--language LANGUAGE`
+    #
+    # Set the value of the `language` variable passed to the template
+    # if no value can be derived via an extension mapping.  Note that
+    # this value has no effect unless your template uses it
+    # explicitly.
     p.add_argument('--language', '-l',
                    help='Value for "language" key if no '
                    'extension mapping is available')
+
+    # `--map-extension EXTENSION=LANGUAGE`
+    #
+    # Allow shdoc to derive a value for the `language` variable by
+    # matching the file against a list of extensions.  You may specify
+    # this option multiple times, for example:
+    #
+    #     shdoc -m .py=python -m .sh=shell -m .yml=yaml
     p.add_argument('--map-extension', '-m',
                    action='append',
                    default=[],
                    type=lambda x: x.split('=', 1),
                    help='Map file extensions to values for '
                    'the "language" key')
+
+    # `--metadata KEY=VALUE`
+    #
+    # Provide arbitary key=value metadata that will be made available
+    # to the template in the `metadata` dictionary.  For example, if
+    # you run:
+    #
+    #     shdoc -m author='Lars Kellogg-Stedman'
+    #
+    # Then in your template you can reference:
+    #
+    #     Author: {{ metadata.author }}
     p.add_argument('--metadata', '-d',
                    action='append',
                    default=[],
