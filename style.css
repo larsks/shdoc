@@ -3,23 +3,27 @@ div {
 }
 
 .outer {
+	display: flex;
 	white-space: nowrap;
 }
 
 .doc {
-	display: inline-block;
 	white-space: normal;
-	margin-right: 5em;
+	margin-right: 1em;
 	width: 30%;
+	border-bottom: thin solid black;
 }
 
 .code {
-	display: inline-block;
+	background-color: #e0e0e0;
+	padding-left: 1ex;
+	flex: 1;
+	border-bottom: thin solid black;
 }
 
 .doc pre {
+	background: #e0e0e0;
 	border: thin solid black;
-	background-color: #e0e0e0;
 	padding: 1ex;
 }
 
