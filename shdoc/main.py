@@ -87,7 +87,7 @@ def file_or_stdio(name, mode):
 # this will require the support of CSS in your template.
 def emit_chunk(code, doc, template):
     code = ''.join(escape(x) for x in code)
-    doc = markdown.markdown('\n'.join(doc))
+    doc = markdown.markdown(''.join(doc))
 
     return template.render(
         code=code, doc=doc)
