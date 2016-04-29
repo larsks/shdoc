@@ -13,17 +13,25 @@ from shdoc.parser import HashCommentParser
 # is really meant as an example; a more fully featured template might
 # include things like javascript-enabled syntax coloring, or theme
 # integration into a larger site, etc.
-default_template = pkg_resources.resource_filename(
+default_template_path = pkg_resources.resource_filename(
     __name__,
     'data/template.html.j2')
+
+# This is used for formatting individual chunks of code/documentation.
+chunk_template_path = pkg_resources.resource_filename(
+    __name__,
+    'data/chunk.html.j2')
 
 
 def parse_args():
     p = argparse.ArgumentParser()
 
     p.add_argument('--template', '-t',
-                   default=default_template,
+                   default=default_template_path,
                    help='Path to the HTML template')
+    p.add_argument('--chunk-template',
+                   default=chunk_template_path,
+                   help='Path to HTML template for code/doc chunks')
     p.add_argument('--title', '-T',
                    help='Document title (available to template as "title")')
     p.add_argument('--shortname', '-S',
@@ -77,19 +85,12 @@ def file_or_stdio(name, mode):
 # Takes a `(code, doc)` chunk from the parser and emits the
 # appropriate HTML structure.  Note that for a side-by-side display
 # this will require the support of CSS in your template.
-def emit_chunk(code, doc):
-    return '\n'.join([
-        '<div class="outer">',
-        '<div class="doc">',
-        markdown.markdown('\n'.join(doc)),
-        '</div>',
-        '<div class="code">',
-        '<pre><code>',
-        ''.join(escape(x) for x in code),
-        '</code></pre>',
-        '</div>',
-        '</div>',
-    ])
+def emit_chunk(code, doc, template):
+    code = ''.join(escape(x) for x in code)
+    doc = markdown.markdown('\n'.join(doc))
+
+    return template.render(
+        code=code, doc=doc)
 
 
 def main():
@@ -99,6 +100,9 @@ def main():
 
     with open(args.template) as fd:
         template = jinja2.Template(fd.read())
+
+    with open(args.chunk_template) as fd:
+        chunk_template = jinja2.Template(fd.read())
 
     content = ''
     with file_or_stdio(args.input, 'r') as infd:
@@ -116,7 +120,7 @@ def main():
                 break
 
         for code, doc in HashCommentParser(infd):
-            content += emit_chunk(code, doc)
+            content += emit_chunk(code, doc, chunk_template)
 
         # Set the title to the value of the `--title` option, if
         # provided, otherwise the base filename if `--shortname` was
@@ -128,10 +132,10 @@ def main():
         # Render the template
         with file_or_stdio(args.output, 'w') as outfd:
             outfd.write(template.render(content=content,
-                                     filename=infd.name,
-                                     title=title,
-                                     language=args.language,
-                                     metadata=args.metadata))
+                                        filename=infd.name,
+                                        title=title,
+                                        language=args.language,
+                                        metadata=args.metadata))
 
 if __name__ == '__main__':
     main()
