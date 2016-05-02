@@ -111,7 +111,8 @@ def main():
     # [choiceloader]: http://jinja.pocoo.org/docs/dev/api/#jinja2.ChoiceLoader
     loaders = [jinja2.PackageLoader(__name__, 'data')]
     if args.template_directory:
-        loaders.append(jinja2.FileSystemLoader(args.template_directory))
+        loaders = ([jinja2.FileSystemLoader(args.template_directory)] +
+                   loaders)
 
     env = jinja2.Environment(
         loader=jinja2.ChoiceLoader(loaders))
