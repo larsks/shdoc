@@ -1,10 +1,6 @@
 {% include "github.css" %}
 {% include "prism.css" %}
 
-body {
-	margin: 0.5in;
-}
-
 div {
     vertical-align: top;
 }
