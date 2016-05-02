@@ -2,11 +2,11 @@ import argparse
 import jinja2
 import markdown
 import os
-import pkg_resources
 from cgi import escape
 
 from shdoc.parser import HashCommentParser
 from shdoc.util import file_or_stdio
+
 
 def parse_args():
     p = argparse.ArgumentParser()

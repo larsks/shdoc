@@ -1,3 +1,5 @@
+
+
 # This class is responsible for transforming a file containing a fix
 # of code and documentation into a set of `(code, documentation)`
 # pairs.
@@ -29,7 +31,7 @@ class HashCommentParser(object):
         for line in self.fd:
             stripped = line.lstrip()
 
-            # Rules for when we are already reading 
+            # Rules for when we are already reading
             # a block of documentation.
             if indoc:
                 if stripped.startswith('# '):

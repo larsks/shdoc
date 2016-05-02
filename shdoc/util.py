@@ -23,6 +23,3 @@ def file_or_stdio(name, mode):
 
     if fd not in [sys.stdin, sys.stdout]:
         fd.close()
-
-
-
