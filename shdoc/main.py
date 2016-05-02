@@ -8,40 +8,17 @@ from cgi import escape
 from shdoc.parser import HashCommentParser
 from shdoc.util import file_or_stdio
 
-# The default template is included in the package.  This template
-# is really meant as an example; a more fully featured template might
-# include things like javascript-enabled syntax coloring, or theme
-# integration into a larger site, etc.
-default_template_path = pkg_resources.resource_filename(
-    __name__,
-    'data/template.html.j2')
-
-# This is used for formatting individual chunks of code/documentation.
-chunk_template_path = pkg_resources.resource_filename(
-    __name__,
-    'data/chunk.html.j2')
-
-
 def parse_args():
     p = argparse.ArgumentParser()
 
-    # `--template TEMPLATE`
+    # `--template-directory DIRECTORY`
     #
-    # Path to a Jinja2 template that will be used to create the final
-    # document.  See `shdoc/data/template.html.h2` for an example
-    # template.
-    p.add_argument('--template', '-t',
-                   default=default_template_path,
-                   help='Path to the HTML template')
-
-    # `--chunk-template TEMPLATE`
-    #
-    # Path to a Jinja2 template that will be used to render each chunk
-    # of code + documentation.  Ideally you won't need to use this one
-    # much.
-    p.add_argument('--chunk-template',
-                   default=chunk_template_path,
-                   help='Path to HTML template for code/doc chunks')
+    # Path to a directory containing the jinja2 templates used to
+    # render the document.  The main template is called `template.html`.
+    # Any `{% include ... %}` references not found in this directory
+    # will be searched for in the package `data` directory.
+    p.add_argument('--template-directory', '-t',
+                   help='Path to template directory')
 
     # `--title TITLE`
     #
@@ -127,11 +104,19 @@ def main():
     args.map_extension = dict(args.map_extension)
     args.metadata = dict(args.metadata)
 
-    with open(args.template) as fd:
-        template = jinja2.Template(fd.read())
+    # We use a [ChoiceLoader][] so that we can find templates in a
+    # user-defined directory and fall back to the package internal
+    # directory.
+    #
+    # [choiceloader]: http://jinja.pocoo.org/docs/dev/api/#jinja2.ChoiceLoader
+    loaders = [jinja2.PackageLoader(__name__, 'data')]
+    if args.template_directory:
+        loaders.append(jinja2.FileSystemLoader(args.template_directory))
 
-    with open(args.chunk_template) as fd:
-        chunk_template = jinja2.Template(fd.read())
+    env = jinja2.Environment(
+        loader=jinja2.ChoiceLoader(loaders))
+    doc_template = env.get_template('template.html')
+    chunk_template = env.get_template('chunk.html')
 
     content = ''
     with file_or_stdio(args.input, 'r') as infd:
@@ -160,11 +145,12 @@ def main():
 
         # Render the template
         with file_or_stdio(args.output, 'w') as outfd:
-            outfd.write(template.render(content=content,
-                                        filename=infd.name,
-                                        title=title,
-                                        language=args.language,
-                                        metadata=args.metadata))
+            outfd.write(doc_template.render(
+                content=content,
+                filename=infd.name,
+                title=title,
+                language=args.language,
+                metadata=args.metadata))
 
 if __name__ == '__main__':
     main()

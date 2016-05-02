@@ -1,0 +1,77 @@
+{% include "github.css" %}
+{% include "prism.css" %}
+
+body {
+	margin: 0.5in;
+}
+
+div {
+    vertical-align: top;
+}
+
+.outer {
+    display: flex;
+    white-space: nowrap;
+}
+
+.doc {
+    white-space: normal;
+    margin-right: 1em;
+    width: 30%;
+    min-width: 30%;
+    border-bottom: thin solid black;
+}
+
+.code {
+    background-color: #f0f0f0;
+    padding-left: 1ex;
+    flex: 1;
+    border-bottom: thin solid black;
+}
+
+.doc pre {
+    background: #f0f0f0;
+    border: thin solid black;
+    padding: 1ex;
+}
+
+.code pre {
+    margin-bottom: 2ex;
+    margin-top: 0;
+}
+
+ul.navmenu {
+    list-style-type: none;
+    margin: 0;
+    margin-bottom: 1ex;
+    padding: 0;
+    padding-top: 1ex;
+    padding-bottom: 1ex;
+
+    border-top: thin solid black;
+    border-bottom: thin solid black;
+}
+
+ul.navmenu li {
+    display: inline;
+}
+
+ul.navmenu li:not(:first-child) {
+    border-left: thin solid black;
+}
+
+ul.navmenu li a {
+    text-decoration: none;
+    padding: 1ex;
+}
+
+ul.navmenu li a:hover {
+    background-color: #f0f0f0;
+}
+
+@media print {
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+}
