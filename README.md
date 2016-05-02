@@ -16,10 +16,11 @@ equally well with Python, shell scripts, etc.
 
 ## Options
 
-- `--template`, `-t` `TEMPLATE`
+- `--template-directory`, `-t` `DIRECTORY`
 
-  Specifies the HTML template to use for producing the final output.
-  The template will be processed with [jinja2][].
+  Specifies the path to a directory containing [Jinja2][] templates.  The
+  main template is called `template.html`.  You may override any or
+  all of the internal templates.
 
 - `--title`, `-T` `TITLE`
 
