@@ -12,7 +12,7 @@ setup(name='shdoc',
       packages=find_packages(),
       install_requires=requires,
       package_data={'shdoc': [
-          'data/*.j2',
+          'data/*',
       ]},
       entry_points={'console_scripts': [
           'shdoc = shdoc.main:main',
